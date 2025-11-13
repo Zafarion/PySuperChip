@@ -239,8 +239,8 @@ white = (255, 255, 255)
 pixelColor = (black, turquoise)
 width, height = 64, 32
 screen = pygame.display.set_mode((1024, 512))
-frame_buffer = pygame.Surface((width + 30, height + 30))
-game_surface = pygame.Surface((width, height))
+back_buffer = pygame.Surface((width + 30, height + 30))
+front_buffer = pygame.Surface((width, height))
 pygame.display.set_caption("PySuperChip v1.0")
 font = pygame.font.SysFont("Retro.ttf", 20)
 
@@ -339,7 +339,7 @@ match pos:
     case 60: quirks = 3
 
 
-#Inserting font sets in RAM and extending it
+#Inserting font sets into RAM and expanding it
 for pos in range(512 - len(LoResFontSet) - len(HiResFontSet)):
     ram.insert(0, 0)
 ram = bytearray(LoResFontSet) + bytearray(HiResFontSet) + ram
@@ -351,12 +351,12 @@ def drawPixel():
     
     ##print(x, y, row, column)
     ##print(x + 15 + column, y + 15 + row)
-    oldPixel = pixelColor.index(frame_buffer.get_at(((x + 15 + column), (y + 15 + row))))
+    oldPixel = pixelColor.index(back_buffer.get_at(((x + 15 + column), (y + 15 + row))))
     newPixel = ram[I + row] >> (7 - column) & 1
     if oldPixel and newPixel and (x + column) <= width and (y + row) <= height:
         erasedPixels.append([x + column, y + row])
         collision = True
-    frame_buffer.set_at(((x + 15 + column), (y + 15 + row)), pixelColor[oldPixel ^ newPixel])
+    back_buffer.set_at(((x + 15 + column), (y + 15 + row)), pixelColor[oldPixel ^ newPixel])
         
 def natural(number):
     if number < 0: return 0
@@ -369,7 +369,7 @@ while not crashed:
         case 0x0:
             match ram[PC + 1]:
                 case 0xE0: # CLS
-                    frame_buffer.fill(black)
+                    back_buffer.fill(black)
                     PC += 2
                     #print('CLS')
                 case 0xEE: # RET
@@ -379,11 +379,11 @@ while not crashed:
                     PC += 2
                 case 0xFB:
                     #print('Scroll display 4 pixels right')
-                    frame_buffer.scroll(4, 0)
+                    back_buffer.scroll(4, 0)
                     PC += 2
                 case 0xFC:
                     #print('Scroll display 4 pixels left')
-                    frame_buffer.scroll(-4, 0)
+                    back_buffer.scroll(-4, 0)
                     PC += 2
                 case 0xFD:
                     print('Quit')
@@ -392,18 +392,18 @@ while not crashed:
                 case 0xFE:
                     print('Changed to 64 x 32 resolution')
                     width, height = 64, 32
-                    frame_buffer = pygame.Surface((width + 30, height + 30))
-                    game_surface = pygame.Surface((width, height))
+                    back_buffer = pygame.Surface((width + 30, height + 30))
+                    front_buffer = pygame.Surface((width, height))
                     PC += 2
                 case 0xFF:
                     print('Changed to 128 x 64 resolution')
                     width, height = 128, 64
-                    frame_buffer = pygame.Surface((width + 30, height + 30))
-                    game_surface = pygame.Surface((width, height))
+                    back_buffer = pygame.Surface((width + 30, height + 30))
+                    front_buffer = pygame.Surface((width, height))
                     PC += 2
                 case _:
                     #print('Scroll ' + str(ram[PC + 1] & 0x0F) + ' pixels down')
-                    frame_buffer.scroll(0, ram[PC + 1] & 0x0F)
+                    back_buffer.scroll(0, ram[PC + 1] & 0x0F)
                     PC += 2
                 
         case 0x1: # JP addr
@@ -550,13 +550,13 @@ while not crashed:
             if _16x16Sprite == True:
                 I -= 16
     
-            game_surface.blit(frame_buffer, (0, 0), (15, 15, width, height))
+            front_buffer.blit(back_buffer, (0, 0), (15, 15, width, height))
             if len(erasedPixels) > 0:
                 for pos in range(len(erasedPixels)):
-                    game_surface.set_at((erasedPixels[pos][0], erasedPixels[pos][1]), pixelColor[1])
+                    front_buffer.set_at((erasedPixels[pos][0], erasedPixels[pos][1]), pixelColor[1])
                 erasedPixels = []
-            pygame.transform.scale(game_surface, screen.get_size(), screen)
-            #pygame.transform.scale(frame_buffer, screen.get_size(), screen)
+            pygame.transform.scale(front_buffer, screen.get_size(), screen)
+            #pygame.transform.scale(back_buffer, screen.get_size(), screen)
             
             PC += 2
         case 0xE:
@@ -596,10 +596,9 @@ while not crashed:
                     #print('LD V' + str(ram[PC] & 0x0F) + '=' + str(V[ram[PC] & 0x0F]), 'K')
                     DT = 0
                     ST = 0
-                    vblank = 0
-                    game_surface.blit(frame_buffer, (0, 0), (15, 15, width, height))
-                    pygame.transform.scale(game_surface, screen.get_size(), screen)
-                    #pygame.transform.scale(frame_buffer, screen.get_size(), screen)
+                    front_buffer.blit(back_buffer, (0, 0), (15, 15, width, height))
+                    pygame.transform.scale(front_buffer, screen.get_size(), screen)
+                    #pygame.transform.scale(back_buffer, screen.get_size(), screen)
                     pygame.display.flip()
                     click = False
                     while not click:
