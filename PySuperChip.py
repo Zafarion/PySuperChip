@@ -231,7 +231,6 @@ Flag = [0] * 8
 cycles = 0
 frame = 0
 erasedPixels = []
-scrolledRight, scrolledLeft, scrolledDown = 0, 0, 0
 crashed = False
 
 black = (0, 0, 0)
