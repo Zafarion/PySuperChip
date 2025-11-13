@@ -3,7 +3,7 @@ Another Super Chip Emulator
 
 Now this is the definitive emulator to run both SCHIP and CHIP8 games. I'll leave the first one (PyChip8 in my repository) outdated but with a low count of lines of code to facilitate for anyone that want to learn.
 
-This new one now supports Super Chip games, you can choose speed of emulation and choose plataform for better compatibility. I also implemented an anti-flickering measure.
+This new one now supports Super Chip games, you can choose speed of emulation and choose plataform for better compatibility. I also implemented a measure to prevent flickering in most games.
 
 INSTRUCTIONs: 
 
