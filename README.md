@@ -1,11 +1,13 @@
 # PySuperChip
 Another Super Chip Emulator
 
-This is a work in progress. It runs some S-CHIP games but some are broken. I decided to release it early because it runs modern chip-8 games that have glitches on my Chip8 emulator, Pychip8, due to changes in how the CPU instructions work.
+Now this is the definitive emulator to run both SCHIP and CHIP8 games. I'll leave the first one (PyChip8 in my repository) outdated but with a low count of lines of code to facilitate for anyone that want to learn.
 
-Pre-release download link: https://github.com/Zafarion/PySuperChip/releases/tag/superchip
+This new one now supports Super Chip games, you can choose speed of emulation and choose plataform for better compatibility. I also implemented an anti-flickering measure.
 
-Instructions of use: see Pychip8 repository readme.
+INSTRUCTIONs: 
+
+Put the .exe in the same directory of your ROMs and execute. The key bindings are the default used in most chip8 emulators.
 
 ![](https://github.com/Zafarion/PySuperChip/blob/main/3c500ca1-34f1-4e85-9768-16425bc965e2.jfif)
 ![](https://github.com/Zafarion/PySuperChip/blob/main/8cc686fe-1a25-4fad-848d-1a5809d20b79.jfif)
