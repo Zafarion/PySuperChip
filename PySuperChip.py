@@ -4,8 +4,8 @@ import os
 import winsound
 from random import seed
 from random import randint
-import time as t
 
+clock = pygame.time.Clock()
 pygame.init()
 seed(1)
 
@@ -229,7 +229,6 @@ Flag = [0] * 8
 
 #Control variables
 cycles = 0
-frame = 0
 erasedPixels = []
 crashed = False
 
@@ -357,14 +356,9 @@ def drawPixel():
         erasedPixels.append([x + column, y + row])
         collision = True
     back_buffer.set_at(((x + 15 + column), (y + 15 + row)), pixelColor[oldPixel ^ newPixel])
-        
-def natural(number):
-    if number < 0: return 0
-    else: return number
 
 #Main Loop
 while not crashed:
-    time = t.time()
     match ram[PC] >> 4:
         case 0x0:
             match ram[PC + 1]:
@@ -660,12 +654,12 @@ while not crashed:
                     if quirks == 1: I -= 1
                     PC += 2
                 case 0x75:
-                    for pos in range((ram[PC] & 0x0F) + 1):
+                    for pos in range((ram[PC] & 0x0F)):
                         #print('FLAG [' + str(i) + '], V' + str(i) + '=' + str(V[i]))
                         Flag[pos] = V[pos]
                     PC += 2
                 case 0x85:
-                    for pos in range((ram[PC] & 0x0F) + 1):
+                    for pos in range((ram[PC] & 0x0F)):
                         #print('FLAG V' + str(i) + '=' + str(V[i]) + ', [' + str(Flag[i]) + ']')
                         V[pos] = Flag[pos]
                     PC += 2
@@ -681,14 +675,12 @@ while not crashed:
             sys.exit()
 
     cycles += 1
-    frame += t.time() - time
     if cycles == speed:
-        t.sleep(natural(0.0166666666666667 - frame))
+        clock.tick(60)
         if DT > 0: DT -= 1
         if ST > 0:
             winsound.Beep(2500, 1)
             ST -= 1
         cycles = 0
-        frame = 0
         pygame.display.flip()
 
